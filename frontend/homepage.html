@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthConnect - Unified Healthcare Platform</title>
+    
+    <!-- SEO and Social Media Meta Tags -->
+    <meta name="description" content="HealthConnect is a HIPAA-compliant platform connecting patients, doctors, and insurance providers with secure, seamless healthcare coordination.">
+    <meta name="keywords" content="healthcare, healthtech, patient portal, doctor dashboard, insurance claims, medical records, HIPAA compliant">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.healthconnect.com/">
+    <meta property="og:title" content="HealthConnect - Unified Healthcare Platform">
+    <meta property="og:description" content="Connecting care, empowering health. A secure HIPAA-compliant platform for patients, doctors, and insurers.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://www.healthconnect.com/">
+    <meta property="twitter:title" content="HealthConnect - Unified Healthcare Platform">
+    <meta property="twitter:description" content="Connecting care, empowering health. A secure HIPAA-compliant platform for patients, doctors, and insurers.">
+    <meta property="twitter:image" content="https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230d9488'><path d='M12 2L13.88 7.33L19.5 8.24L15.25 12.37L16.3 18.02L12 15.27L7.7 18.02L8.75 12.37L4.5 8.24L10.12 7.33L12 2Z'/></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%230d9488'><path d='M12 2L13.88 7.33L19.5 8.24L15.25 12.37L16.3 18.02L12 15.27L7.7 18.02L8.75 12.37L4.5 8.24L10.12 7.33L12 2Z'/></svg>">
+    
+    <!-- Fixed Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'">
+    
+    <!-- Fixed Dark Mode Flicker Fix -->
+    <script>
+    (function() {
+        try {
+            const theme = document.cookie.match(/theme=([^;]+)/)?.[1];
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const shouldUseDark = theme === 'dark' || (!theme && prefersDark);
+            
+            if (shouldUseDark) {
+                document.documentElement.classList.add('dark-mode');
+                document.body.classList.add('dark-mode');
+            }
+        } catch (e) {
+            console.warn('Theme initialization failed:', e);
+        }
+    })();
+    </script>
+    
+    <!-- Professional Font Pairing & Performance Optimization -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@600;700&family=Source+Sans+Pro:wght@300;400;600;700&display=swap">
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="homepagestyle.css">
+    
+    <!-- Driver.js for Product Tour -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.css">
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "HealthConnect",
+        "url": "https://www.healthconnect.com/",
+        "logo": "https://www.healthconnect.com/logo.svg",
+        "description": "HealthConnect is a unified, secure platform that seamlessly integrates patients, doctors, and insurance providers for a modern healthcare experience.",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "123 Healthcare Ave",
+            "addressLocality": "San Francisco",
+            "addressRegion": "CA",
+            "postalCode": "94107",
+            "addressCountry": "US"
+        },
+        "contactPoint": {
+            "@type": "ContactPoint",
+            "telephone": "+1-555-123-4567",
+            "contactType": "customer service",
+            "email": "info@healthconnect.com"
+        },
+        "sameAs": [
+            "https://twitter.com/healthconnect",
+            "https://www.linkedin.com/company/healthconnect",
+            "https://www.facebook.com/healthconnect"
+        ]
+    }
+    </script>
+    
+    <!-- Critical CSS for initial render -->
+    <style>
+        :root {
+            --bg-primary: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+            --bg-secondary: #ffffff;
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --accent-primary: #0d9488;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Source Sans Pro', sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
+        }
+        
+        .hero {
+            color: white;
+            padding: 6rem 2rem;
+            text-align: center;
+            background: var(--bg-primary);
+            background-size: 400% 400%;
+            animation: gradientFlow 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        @keyframes gradientFlow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .hero h1 {
+            font-family: 'Lora', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            color: #f1f5f9;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2.5rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            color: #f1f5f9;
+        }
+        
+        /* Loading Spinner */
+        #loading-spinner {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.3s ease;
+        }
+        
+        #loading-spinner.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e0f2f1;
+            border-top: 5px solid var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Mobile bottom nav padding fix */
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 70px;
+            }
+        }
+        
+        /* Small screen hero text adjustment */
+        @media (max-width: 360px) {
+            .hero h1 {
+                font-size: 1.75rem;
+                line-height: 1.1;
+                margin-bottom: 1rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+                margin-bottom: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Spinner -->
+    <div id="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Skip to Main Content Link -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <!-- Cookie Consent Banner -->
+    <div id="cookie-consent">
+        <div class="cookie-content">
+            <div class="cookie-text">
+                <h3>We Value Your Privacy</h3>
+                <p>We use cookies to enhance your experience, analyze site traffic, and for personalization. By continuing to use this site, you consent to our use of cookies.</p>
+            </div>
+            <div class="cookie-actions">
+                <button class="btn-primary" id="cookie-accept">Accept</button>
+                <button class="btn-secondary" id="cookie-decline">Decline</button>
+                <button class="btn-secondary" id="cookie-dismiss" style="display: none;">Dismiss</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Top Button -->
+    <div class="back-to-top" id="backToTop">
+        <i data-lucide="arrow-up"></i>
+    </div>
+
+    <!-- Header/Navigation -->
+    <header class="header" role="banner">
+        <a href="#" class="logo">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L13.88 7.33L19.5 8.24L15.25 12.37L16.3 18.02L12 15.27L7.7 18.02L8.75 12.37L4.5 8.24L10.12 7.33L12 2Z" fill="#0d9488" stroke="#0d9488" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 2C9.5 4.5 9.5 7.5 12 10C14.5 7.5 14.5 4.5 12 2Z" fill="none" stroke="rgba(13, 148, 136, 0.5)" stroke-width="1.5"/>
+                <path d="M20 10C18.5 11 17 12.5 15.25 12.37" stroke="rgba(13, 148, 136, 0.3)" stroke-width="1"/>
+                <path d="M4 10C5.5 11 7 12.5 8.75 12.37" stroke="rgba(13, 148, 136, 0.3)" stroke-width="1"/>
+            </svg>
+            <span>HealthConnect</span>
+        </a>
+        
+        <!-- Header Actions Container -->
+        <div class="header-actions">
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#features">Features</a></li>
+                    <li><a href="#security">Security</a></li>
+                    <li><a href="#testimonials">Testimonials</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+            </nav>
+            
+            <!-- Dark Mode Toggle Button -->
+            <button class="theme-toggle-btn" id="themeToggle" 
+                    aria-label="Switch to dark mode"
+                    aria-pressed="false">
+                <i data-lucide="sun" aria-hidden="true"></i>
+                <span class="sr-only">Toggle dark mode</span>
+            </button>
+            
+            <!-- Login Button -->
+            <a href="../loginv2/login.html" class="login-btn">Log In</a>
+        </div>
+        
+        <!-- Mobile Menu Toggle -->
+        <button class="mobile-menu-toggle" 
+                aria-controls="mobile-nav-menu" 
+                aria-expanded="false"
+                aria-label="Open navigation menu">
+            <i data-lucide="menu" aria-hidden="true"></i>
+        </button>
+    </header>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav-overlay"></div>
+    <nav class="mobile-nav" id="mobile-nav-menu">
+        <div class="mobile-nav-header">
+            <a href="#" class="logo">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L13.88 7.33L19.5 8.24L15.25 12.37L16.3 18.02L12 15.27L7.7 18.02L8.75 12.37L4.5 8.24L10.12 7.33L12 2Z" fill="#0d9488" stroke="#0d9488" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>HealthConnect</span>
+            </a>
+            <button class="mobile-nav-close">
+                <i data-lucide="x" aria-hidden="true"></i>
+            </button>
+        </div>
+        <ul class="mobile-nav-links">
+            <li><a href="#features">Features</a></li>
+            <li><a href="#security">Security</a></li>
+            <li><a href="#testimonials">Testimonials</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="patient.html">Patient Portal</a></li>
+            <li><a href="doctor.html">Provider Portal</a></li>
+            <li><a href="insurance.html">Insurance Portal</a></li>
+            <li><a href="admin.html">Admin Portal</a></li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main role="main" id="main-content">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content fade-in">
+                <h1>Connecting Care, Empowering Health.</h1>
+                <p>HealthConnect is a unified, secure platform that seamlessly integrates patients, doctors, and insurance providers for a modern healthcare experience.</p>
+                <div class="hero-buttons">
+                    <button class="btn-primary" id="requestDemoBtn" aria-label="Request a demo of HealthConnect platform">Request a Demo</button>
+                    <button class="btn-secondary" id="learnMoreBtn" aria-label="Learn more about HealthConnect features">Learn More</button>
+                    <button class="tour-btn" id="tourBtn" aria-label="Take a guided tour of HealthConnect platform">
+                        <i data-lucide="play-circle" aria-hidden="true"></i>
+                        Take a Tour
+                    </button>
+                </div>
+                
+                <!-- Trust Indicators -->
+                <div class="trust-indicators">
+                    <div class="trust-card">
+                        <i data-lucide="user-round" aria-hidden="true"></i>
+                        <div class="trust-card-text">
+                            <strong>487K+</strong>
+                            <span>Patients Active</span>
+                        </div>
+                    </div>
+                    <div class="trust-card">
+                        <i data-lucide="stethoscope" aria-hidden="true"></i>
+                        <div class="trust-card-text">
+                            <strong>12K+</strong>
+                            <span>Providers Using</span>
+                        </div>
+                    </div>
+                    <div class="trust-card">
+                        <i data-lucide="shield-check" aria-hidden="true"></i>
+                        <div class="trust-card-text">
+                            <strong>HIPAA</strong>
+                            <span>Compliant</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="dashboard-mockup" role="img" aria-label="Dashboard preview showing patient health metrics and appointment scheduling" tabindex="0">
+                    <div class="dashboard-header">
+                        <div class="window-controls">
+                            <div class="window-control"></div>
+                            <div class="window-control"></div>
+                            <div class="window-control"></div>
+                        </div>
+                    </div>
+                    <div class="dashboard-body">
+                        <div class="dashboard-sidebar">
+                            <div class="sidebar-item"></div>
+                            <div class="sidebar-item"></div>
+                            <div class="sidebar-item"></div>
+                            <div class="sidebar-item"></div>
+                        </div>
+                        <div class="dashboard-content">
+                            <div class="content-chart" role="img" aria-label="Health metrics chart showing patient vital trends">
+                                <div class="chart-bar" aria-label="Heart rate: 72 bpm"></div>
+                                <div class="chart-bar" aria-label="Blood pressure: 120/80"></div>
+                                <div class="chart-bar" aria-label="Oxygen saturation: 98%"></div>
+                                <div class="chart-bar" aria-label="Weight: 165 lbs"></div>
+                                <div class="chart-bar" aria-label="Activity level: 85%"></div>
+                            </div>
+                            <div class="content-stats">
+                                <div class="stat-item">
+                                    <div class="stat-icon">
+                                        <i data-lucide="heart-pulse" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="stat-text">
+                                        <div class="stat-title"></div>
+                                        <div class="stat-value"></div>
+                                    </div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-icon">
+                                        <i data-lucide="stethoscope" aria-hidden="true"></i>
+                                    </div>
+                                    <div class="stat-text">
+                                        <div class="stat-title"></div>
+                                        <div class="stat-value"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="stats" id="stats">
+            <div class="section-header">
+                <h2>Our Impact in Numbers</h2>
+                <p>Join thousands of healthcare providers and patients who trust HealthConnect</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon-lg">
+                        <i data-lucide="heart-pulse" aria-hidden="true"></i>
+                    </div>
+                    <div class="stat-number" data-target="487362">0</div>
+                    <div class="stat-label">Active Patients</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon-lg">
+                        <i data-lucide="stethoscope" aria-hidden="true"></i>
+                    </div>
+                    <div class="stat-number" data-target="12847">0</div>
+                    <div class="stat-label">Healthcare Providers</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon-lg">
+                        <i data-lucide="timer" aria-hidden="true"></i>
+                    </div>
+                    <div class="stat-number" data-target="4.2">0</div>
+                    <div class="stat-label">Avg. Response Time (hours)</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon-lg">
+                        <i data-lucide="line-chart" aria-hidden="true"></i>
+                    </div>
+                    <div class="stat-number" data-target="94.7">0</div>
+                    <div class="stat-label">Patient Satisfaction Rate</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="how-it-works" id="how-it-works">
+            <div class="section-header">
+                <h2>Simple Steps to Connected Care</h2>
+                <p>Get started with HealthConnect in three easy steps</p>
+            </div>
+            
+            <div class="how-it-works-container" style="position: relative;">
+                <!-- Timeline SVG with drawing animation -->
+                <svg id="timeline-svg" style="position: absolute; left: 40px; top: 100px; height: 100%; z-index: 0;">
+                    <path d="M 0 0 V 1200" stroke="var(--border-primary)" stroke-width="3" fill="none" />
+                </svg>
+                
+                <div class="work-step">
+                    <div class="step-content">
+                        <div class="step-number">01</div>
+                        <h3>Register & Connect</h3>
+                        <p>Create your secure HealthConnect profile in minutes. Link your existing providers and health devices to build a comprehensive view of your health.</p>
+                    </div>
+                    <div class="step-visual">
+                        <div class="browser-window">
+                            <div class="browser-header">
+                                <div class="browser-dot"></div>
+                                <div class="browser-dot"></div>
+                                <div class="browser-dot"></div>
+                            </div>
+                            <div class="browser-body">
+                                <input type="text" class="mock-input" placeholder="Full Name">
+                                <input type="email" class="mock-input" placeholder="Email Address">
+                                <input type="password" class="mock-input" placeholder="Password">
+                                <button class="mock-button">Create Account</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="work-step">
+                    <div class="step-content">
+                        <div class="step-number">02</div>
+                        <h3>Manage Your Health</h3>
+                        <p>Access all your information from one dashboard. Schedule appointments, view lab results, and manage data sharing permissions with ease.</p>
+                    </div>
+                    <div class="step-visual">
+                        <div class="browser-window">
+                            <div class="browser-header">
+                                <div class="browser-dot"></div>
+                                <div class="browser-dot"></div>
+                                <div class="browser-dot"></div>
+                            </div>
+                            <div class="browser-body">
+                                <div class="mock-card">
+                                    <h4>Upcoming Appointment</h4>
+                                    <p>Dr. John Smith</p>
+                                    <p>Tomorrow, 10:00 AM</p>
+                                </div>
+                                <div class="mock-card">
+                                    <h4>Vitals</h4>
+                                    <p>Heart Rate: 72 bpm</p>
+                                    <p>Blood Pressure: 120/80</p>
+                                    <p>Weight: 165 lbs</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="work-step">
+                    <div class="step-content">
+                        <div class="step-number">03</div>
+                        <h3>Share Securely</h3>
+                        <p>Grant time-limited, role-based access to your records. All actions are logged on an immutable blockchain, giving you full transparency and control.</p>
+                    </div>
+                    <div class="step-visual">
+                        <div class="browser-window">
+                            <div class="browser-header">
+                                <div class="browser-dot"></div>
+                                <div class="browser-dot"></div>
+                                <div class="browser-dot"></div>
+                            </div>
+                            <div class="browser-body">
+                                <h4 style="margin-bottom: 1rem; color: var(--text-primary); font-size: 1rem;">Data Sharing Permissions</h4>
+                                <div class="permission-item">
+                                    <div class="permission-info">
+                                        <h4>Dr. John Smith</h4>
+                                        <p>Cardiologist - Access until: 12/15/2026</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                                <div class="permission-item">
+                                    <div class="permission-info">
+                                        <h4>LabCorp Diagnostics</h4>
+                                        <p>Laboratory - Access until: 11/30/2026</p>
+                                    </div>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features" id="features">
+            <div class="section-header">
+                <h2>A Platform for Everyone</h2>
+                <p>HealthConnect provides tailored experiences for every member of the healthcare ecosystem</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="card feature-card card-with-bg" id="patient-card">
+                    <div class="feature-icon">
+                        <i data-lucide="heart-pulse" aria-hidden="true"></i>
+                    </div>
+                    <h3>For Patients</h3>
+                    <p>Take control of your health journey. Easily manage appointments, access your medical records, and connect with your care team from anywhere.</p>
+                    <a href="#" class="feature-link">
+                        <span>Learn More</span>
+                        <i data-lucide="arrow-right" aria-hidden="true"></i>
+                    </a>
+                </div>
+                
+                <div class="card feature-card card-with-bg" id="provider-card">
+                    <div class="feature-icon">
+                        <i data-lucide="stethoscope" aria-hidden="true"></i>
+                    </div>
+                    <h3>For Providers</h3>
+                    <p>Streamline your practice with powerful tools for patient management, electronic health records, and seamless communication.</p>
+                    <a href="#" class="feature-link">
+                        <span>Learn More</span>
+                        <i data-lucide="arrow-right" aria-hidden="true"></i>
+                    </a>
+                </div>
+                
+                <div class="card feature-card">
+                    <div class="feature-icon">
+                        <i data-lucide="receipt-text" aria-hidden="true"></i>
+                    </div>
+                    <h3>For Insurance</h3>
+                    <p>Process claims efficiently, verify policies in real-time, and detect potential fraud with advanced analytics and secure data access.</p>
+                    <a href="#" class="feature-link">
+                        <span>Learn More</span>
+                        <i data-lucide="arrow-right" aria-hidden="true"></i>
+                    </a>
+                </div>
+                
+                <div class="card feature-card">
+                    <div class="feature-icon">
+                        <i data-lucide="settings-2" aria-hidden="true"></i>
+                    </div>
+                    <h3>For Administrators</h3>
+                    <p>Monitor system health, manage user access, and ensure compliance with comprehensive administrative tools and reporting.</p>
+                    <a href="#" class="feature-link">
+                        <span>Learn More</span>
+                        <i data-lucide="arrow-right" aria-hidden="true"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases Section -->
+        <section class="use-cases" id="use-cases">
+            <div class="section-header">
+                <h2>Tailored for Your Role</h2>
+                <p>Discover how HealthConnect serves your specific needs</p>
+            </div>
+            
+            <div class="use-cases-container">
+                <div class="role-toggles" role="tablist">
+                    <button class="toggle-btn active" data-role="patient" role="tab" aria-selected="true" aria-controls="patient-panel">
+                        <i data-lucide="heart-pulse" aria-hidden="true"></i>
+                        <span>Patient</span>
+                    </button>
+                    <button class="toggle-btn" data-role="doctor" role="tab" aria-selected="false" aria-controls="doctor-panel">
+                        <i data-lucide="stethoscope" aria-hidden="true"></i>
+                        <span>Doctor</span>
+                    </button>
+                    <button class="toggle-btn" data-role="insurance" role="tab" aria-selected="false" aria-controls="insurance-panel">
+                        <i data-lucide="receipt-text" aria-hidden="true"></i>
+                        <span>Insurance Agent</span>
+                    </button>
+                </div>
+                
+                <div class="role-content">
+                    <div class="content-panel active content-fade" id="patient-panel" role="tabpanel">
+                        <h3>Your Health, In Your Hands.</h3>
+                        <div class="benefits-list">
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i data-lucide="folder-open" aria-hidden="true"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <h4>Consolidated Medical Records</h4>
+                                    <p>All your health data in one secure place, accessible anytime</p>
+                                </div>
+                            </div>
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i data-lucide="calendar-check" aria-hidden="true"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <h4>Easy Appointment Scheduling</h4>
+                                    <p>Book, reschedule, or cancel appointments with just a few clicks</p>
+                                </div>
+                            </div>
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i data-lucide="messages-square" aria-hidden="true"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <h4>Secure Doctor Communication</h4>
+                                    <p>Message your healthcare providers directly through encrypted channels</p>
+                                </div>
+                            </div>
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i data-lucide="pill" aria-hidden="true"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <h4>Medication Reminders</h4>
+                                    <p>Never miss a dose with smart reminders and refill notifications</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-panel content-fade" id="doctor-panel" role="tabpanel">
+                        <h3>A Smarter Way to Practice.</h3>
+                        <div class="benefits-list">
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i data-lucide="line-chart" aria-hidden="true"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <h4>Unified Patient Dashboards</h4>
+                                    <p>Complete patient history and real-time data at your fingertips</p>
+                                </div>
+                            </div>
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i data-lucide="syringe" aria-hidden="true"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <h4>Streamlined E-Prescribing</h4>
+                                    <p>Send prescriptions directly to pharmacies with built-in drug interaction checks</p>
+                                </div>
+                            </div>
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i data-lucide="clipboard-list" aria-hidden="true"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <h4>Reduced Administrative Burden</h4>
+                                    <p>Automated billing, documentation, and insurance verification</p>
+                                </div>
+                            </div>
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i data-lucide="activity" aria-hidden="true"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <h4>Real-time IoT Data</h4>
+                                    <p>Monitor patient vitals from wearables and connected devices</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="content-panel content-fade" id="insurance-panel" role="tabpanel">
+                        <h3>Clarity in Claims.</h3>
+                        <div class="benefits-list">
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i data-lucide="check-circle" aria-hidden="true"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <h4>Instant Policy Verification</h4>
+                                    <p>Verify coverage and eligibility in real-time at point of care</p>
+                                </div>
+                            </div>
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i data-lucide="shield-check" aria-hidden="true"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <h4>AI-Powered Fraud Detection</h4>
+                                    <p>Advanced analytics identify suspicious patterns and anomalies</p>
+                                </div>
+                            </div>
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i data-lucide="zap" aria-hidden="true"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <h4>Faster Claims Processing</h4>
+                                    <p>Automated workflows reduce processing time from weeks to days</p>
+                                </div>
+                            </div>
+                            <div class="benefit-item">
+                                <div class="benefit-icon">
+                                    <i data-lucide="lock" aria-hidden="true"></i>
+                                </div>
+                                <div class="benefit-text">
+                                    <h4>Secure Data Access</h4>
+                                    <p>Access only the information you need with role-based permissions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security Section -->
+        <section class="security" id="security">
+            <div class="section-header">
+                <h2>Security You Can Trust</h2>
+                <p>Your health data is protected with enterprise-grade security measures</p>
+            </div>
+            
+            <div class="security-grid">
+                <div class="security-item">
+                    <div class="security-icon">
+                        <i data-lucide="shield-check" aria-hidden="true"></i>
+                    </div>
+                    <div class="security-content">
+                        <h3>Blockchain Integrity</h3>
+                        <p>Immutable audit trails ensure the integrity of all medical records and transactions.</p>
+                    </div>
+                </div>
+                
+                <div class="security-item">
+                    <div class="security-icon">
+                        <i data-lucide="lock" aria-hidden="true"></i>
+                    </div>
+                    <div class="security-content">
+                        <h3>End-to-End Encryption</h3>
+                        <p>All sensitive health data is encrypted both in transit and at rest using military-grade encryption.</p>
+                    </div>
+                </div>
+                
+                <div class="security-item">
+                    <div class="security-icon">
+                        <i data-lucide="award" aria-hidden="true"></i>
+                    </div>
+                    <div class="security-content">
+                        <h3>HIPAA Compliant</h3>
+                        <p>Fully compliant with healthcare regulations including HIPAA, GDPR, and other global standards.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Trusted By Section -->
+        <section class="trusted-by">
+            <h3 style="color: var(--text-tertiary); font-weight: 600; letter-spacing: 1px; margin-bottom: 2.5rem; font-size: 1rem; text-transform: uppercase;">Integrates Seamlessly with Leading Health Platforms</h3>
+            <div class="compliance-badges">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/c/c7/Epic_Systems_logo.svg" alt="Epic Systems EHR platform" loading="lazy" onerror="this.style.display='none'" rel="noopener">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/58/Cerner_logo.svg" alt="Cerner healthcare technology" loading="lazy" onerror="this.style.display='none'" rel="noopener">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Quest_Diagnostics_logo.svg" alt="Quest Diagnostics laboratory services" loading="lazy" onerror="this.style.display='none'" rel="noopener">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/95/Labcorp_logo.svg" alt="LabCorp medical laboratory" loading="lazy" onerror="this.style.display='none'" rel="noopener">
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="testimonials" id="testimonials">
+            <div class="section-header">
+                <h2>What Our Users Say</h2>
+                <p>Hear from patients and providers who use HealthConnect every day</p>
+            </div>
+            
+            <div class="testimonials-grid">
+                <div class="card testimonial-card">
+                    <div class="testimonial-quote">
+                        <i data-lucide="quote" aria-hidden="true"></i>
+                    </div>
+                    <p class="testimonial-text">"After my husband's stroke, coordinating care between his neurologist, physical therapist, and primary care was overwhelming. HealthConnect finally let me see all his appointments, medication changes, and therapy notes in one place. When his PT adjusted his exercises, I could immediately share that with his doctor—something that would have taken weeks of phone tag before."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <i data-lucide="user-round" aria-hidden="true"></i>
+                        </div>
+                        <div class="author-info">
+                            <h4>Maria Chen</h4>
+                            <p>Family Caregiver, San Francisco</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card testimonial-card">
+                    <div class="testimonial-quote">
+                        <i data-lucide="quote" aria-hidden="true"></i>
+                    </div>
+                    <p class="testimonial-text">"I was spending 90 minutes daily on prior authorizations and insurance verifications. HealthConnect's real-time eligibility checks cut that to under 20 minutes. Last month alone, we processed 340 authorizations with a 97% first-pass approval rate. My staff can finally focus on patient care instead of paperwork, and our no-show rate dropped by 23% thanks to the automated appointment reminders."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <i data-lucide="user-round" aria-hidden="true"></i>
+                        </div>
+                        <div class="author-info">
+                            <h4>Dr. James Okonkwo</h4>
+                            <p>Family Medicine, Atlanta</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq" id="faq">
+            <div class="section-header">
+                <h2>Frequently Asked Questions</h2>
+                <p>Find answers to common questions about HealthConnect</p>
+            </div>
+            
+            <div class="faq-container">
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>Is HealthConnect HIPAA compliant?</span>
+                        <i data-lucide="chevron-down" class="faq-icon" aria-hidden="true"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Yes, HealthConnect is fully HIPAA compliant. We employ end-to-end encryption, secure data storage, and strict access controls to ensure all protected health information (PHI) is handled in accordance with HIPAA regulations. Our platform undergoes regular security audits and maintains comprehensive documentation for compliance verification.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>What EHR systems do you integrate with?</span>
+                        <i data-lucide="chevron-down" class="faq-icon" aria-hidden="true"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>HealthConnect integrates with all major EHR systems including Epic, Cerner, Allscripts, and athenahealth. Our flexible API allows for seamless data exchange regardless of your current system. We also support HL7 FHIR standards for interoperability with emerging healthcare technologies.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>What is your pricing model?</span>
+                        <i data-lucide="chevron-down" class="faq-icon" aria-hidden="true"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>We offer flexible pricing based on your organization's size and needs. For individual providers, we have a monthly subscription model. For larger healthcare organizations, we offer enterprise licensing with volume discounts. Patients can access basic features for free, with premium features available through a low monthly subscription. Contact our sales team for a customized quote.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-item">
+                    <button class="faq-question" aria-expanded="false">
+                        <span>How is my data protected?</span>
+                        <i data-lucide="chevron-down" class="faq-icon" aria-hidden="true"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Your data is protected with multiple layers of security including end-to-end encryption, blockchain-based audit trails, and role-based access controls. We never sell your data to third parties and adhere to strict data minimization principles. All data is stored in SOC 2 compliant data centers with 24/7 monitoring and regular penetration testing.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta">
+            <h2>Ready to Transform Your Healthcare Experience?</h2>
+            <p>Join thousands of healthcare providers and patients who trust HealthConnect with their medical data and workflows.</p>
+            <button class="btn-primary" id="getStartedBtn" aria-label="Get started with HealthConnect today">Get Started Today</button>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>HealthConnect</h3>
+                <p style="color: var(--text-tertiary); margin-bottom: 1.5rem;">Connecting care, empowering health through innovative technology solutions.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link" aria-label="Twitter" rel="noopener"><i data-lucide="twitter" aria-hidden="true"></i></a>
+                    <a href="#" class="social-link" aria-label="Facebook" rel="noopener"><i data-lucide="facebook" aria-hidden="true"></i></a>
+                    <a href="#" class="social-link" aria-label="LinkedIn" rel="noopener"><i data-lucide="linkedin" aria-hidden="true"></i></a>
+                    <a href="#" class="social-link" aria-label="Instagram" rel="noopener"><i data-lucide="instagram" aria-hidden="true"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Platform</h3>
+                <ul class="footer-links">
+                    <li><a href="#">For Patients</a></li>
+                    <li><a href="#">For Providers</a></li>
+                    <li><a href="#">For Insurance</a></li>
+                    <li><a href="#">For Administrators</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Company</h3>
+                <ul class="footer-links">
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Careers</a></li>
+                    <li><a href="#">Press</a></li>
+                    <li><a href="#">Contact</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Resources</h3>
+                <ul class="footer-links">
+                    <li><a href="#">Help Center</a></li>
+                    <li><a href="#">Documentation</a></li>
+                    <li><a href="#">Blog</a></li>
+                    <li><a href="#">Status</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <div class="copyright" id="copyright-year">© 2025 HealthConnect. All rights reserved.</div>
+            <div>
+                <a href="#" style="color: var(--text-tertiary); text-decoration: none; margin-right: 1.5rem;">Privacy Policy</a>
+                <a href="#" style="color: var(--text-tertiary); text-decoration: none;">Terms of Service</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav" role="navigation">
+        <a href="#" class="nav-item">
+            <i data-lucide="home" aria-hidden="true"></i>
+            <span>Home</span>
+        </a>
+        <a href="#features" class="nav-item">
+            <i data-lucide="layout-grid" aria-hidden="true"></i>
+            <span>Features</span>
+        </a>
+        <a href="login.html" class="nav-item">
+            <i data-lucide="log-in" aria-hidden="true"></i>
+            <span>Login</span>
+        </a>
+        <a href="#" class="nav-item" id="mobileDemoBtn" aria-label="View demo on mobile">
+            <i data-lucide="play-circle" aria-hidden="true"></i>
+            <span>Demo</span>
+        </a>
+    </nav>
+
+    <!-- Lead Capture Modal -->
+    <div class="modal-overlay" id="leadModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Request a Demo</h2>
+                <button class="modal-close" id="modalClose" aria-label="Close modal">
+                    <i data-lucide="x" aria-hidden="true"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="leadForm" action="#" method="POST">
+                    <div class="form-group">
+                        <label for="fullName">Full Name <span aria-label="required">*</span></label>
+                        <input type="text" id="fullName" name="fullName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="workEmail">Work Email <span aria-label="required">*</span></label>
+                        <input type="email" id="workEmail" name="workEmail" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="companyName">Company Name <span aria-label="required">*</span></label>
+                        <input type="text" id="companyName" name="companyName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="role">Role <span aria-label="required">*</span></label>
+                        <select id="role" name="role" class="form-control" required>
+                            <option value="">Select your role</option>
+                            <option value="patient">Patient</option>
+                            <option value="provider">Healthcare Provider</option>
+                            <option value="insurance">Insurance Professional</option>
+                            <option value="administrator">Administrator</option>
+                        </select>
+                    </div>
+                    <div class="form-group dont-show-again" style="display: none;">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="dontShowAgain">
+                            <span>Don't show this again</span>
+                        </label>
+                    </div>
+                    <button type="submit" class="btn-primary" style="width: 100%;" disabled>Request Demo</button>
+                </form>
+                
+                <div class="success-message" id="successMessage">
+                    <div class="success-icon">
+                        <i data-lucide="check" aria-hidden="true"></i>
+                    </div>
+                    <h3>Thank You!</h3>
+                    <p>We've received your request and will contact you within 24 hours to schedule your demo.</p>
+                    <button class="btn-primary" id="closeSuccessBtn">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Icon System Modernization - Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Driver.js for Product Tour -->
+    <script src="https://cdn.jsdelivr.net/npm/driver.js@1.0.1/dist/driver.min.js"></script>
+    
+    <!-- External JavaScript -->
+    <script src="homepagescript.js"></script>
+</body>
+</html>
