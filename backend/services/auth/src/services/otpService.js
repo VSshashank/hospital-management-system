@@ -1,125 +1,138 @@
-const redis = require('redis');
+const crypto = require('crypto');
 const config = require('../config/config');
+const redisClient = require('./redis');
 const logger = require('../../../../shared/utils/logger');
 
 class OTPService {
-  constructor() {
-    this.redisClient = redis.createClient({
-      socket: {
-        host: config.redis?.host || 'localhost',
-        port: config.redis?.port || 6379,
-      },
-    });
-    
-    this.redisClient.on('error', (err) => {
-      logger.error('Redis Client Error:', err);
-    });
-    
-    this.redisClient.on('connect', () => {
-      logger.info('✅ Redis connected successfully');
-    });
-    
-    // Connect to Redis
-    this.connect();
+  // Hashes an OTP before storage or comparison.
+  hashOTP(otp) {
+    return crypto.createHash('sha256').update(String(otp)).digest('hex');
   }
-  
-  async connect() {
-    try {
-      await this.redisClient.connect();
-    } catch (error) {
-      logger.error('❌ Failed to connect to Redis:', error);
-    }
-  }
-  
-  /**
-   * Generate a random 6-digit OTP
-   */
+
+  // Generates a cryptographically secure numeric OTP.
   generateOTP() {
     const length = config.otp.length;
-    const min = Math.pow(10, length - 1);
-    const max = Math.pow(10, length) - 1;
-    return Math.floor(min + Math.random() * (max - min + 1)).toString();
+    const min = 10 ** (length - 1);
+    const max = 10 ** length;
+
+    return crypto.randomInt(min, max).toString();
   }
-  
-  /**
-   * Store OTP in Redis with expiry
-   */
+
+  // Stores a hashed OTP in Redis with an expiry.
   async storeOTP(email, otp) {
     try {
       const key = `otp:${email}`;
       const expirySeconds = config.otp.expiryMinutes * 60;
-      
-      await this.redisClient.setEx(key, expirySeconds, otp);
-      
-      logger.info(`📧 OTP stored for ${email}, expires in ${config.otp.expiryMinutes} minutes`);
+      const otpHash = this.hashOTP(otp);
+
+      await redisClient.setEx(key, expirySeconds, otpHash);
+
+      logger.info(`OTP stored for ${email}, expires in ${config.otp.expiryMinutes} minutes`);
       return { success: true };
     } catch (error) {
-      logger.error('❌ Error storing OTP:', error);
-      throw new Error('Failed to store OTP');
+      logger.error('Error storing OTP:', error);
+      throw new Error('REDIS_UNAVAILABLE');
     }
   }
-  
-  /**
-   * Verify OTP
-   */
+
+  // Verifies a candidate OTP against the stored OTP hash.
   async verifyOTP(email, otp) {
     try {
       const key = `otp:${email}`;
-      const storedOTP = await this.redisClient.get(key);
-      
-      if (!storedOTP) {
-        return { 
-          success: false, 
-          message: 'OTP expired or not found' 
+      const storedOTPHash = await redisClient.get(key);
+
+      if (!storedOTPHash) {
+        return {
+          success: false,
+          message: 'OTP expired or not found'
         };
       }
-      
-      if (storedOTP !== otp) {
-        return { 
-          success: false, 
-          message: 'Invalid OTP' 
+
+      if (storedOTPHash !== this.hashOTP(otp)) {
+        return {
+          success: false,
+          message: 'Invalid OTP'
         };
       }
-      
-      // Delete OTP after successful verification
-      await this.redisClient.del(key);
-      
-      logger.info(`✅ OTP verified successfully for ${email}`);
-      return { 
-        success: true, 
-        message: 'OTP verified successfully' 
+
+      await redisClient.del(key);
+
+      logger.info(`OTP verified successfully for ${email}`);
+      return {
+        success: true,
+        message: 'OTP verified successfully'
       };
     } catch (error) {
-      logger.error('❌ Error verifying OTP:', error);
-      throw new Error('Failed to verify OTP');
+      logger.error('Error verifying OTP:', error);
+      throw new Error('REDIS_UNAVAILABLE');
     }
   }
-  
-  /**
-   * Delete OTP
-   */
+
+  // Increments the per-email OTP attempt counter with a 15-minute TTL.
+  async incrementOTPAttempts(email) {
+    try {
+      const key = `otp:attempts:${email}`;
+      const results = await redisClient
+        .multi()
+        .incr(key)
+        .expire(key, 15 * 60)
+        .exec();
+      const attempts = Array.isArray(results?.[0]) ? results[0][1] : results[0];
+
+      return attempts;
+    } catch (error) {
+      logger.error('Error incrementing OTP attempts:', error);
+      throw new Error('REDIS_UNAVAILABLE');
+    }
+  }
+
+  // Reads the per-email OTP attempt counter.
+  async getOTPAttempts(email) {
+    try {
+      const key = `otp:attempts:${email}`;
+      const attempts = await redisClient.get(key);
+
+      return attempts ? parseInt(attempts, 10) : 0;
+    } catch (error) {
+      logger.error('Error reading OTP attempts:', error);
+      throw new Error('REDIS_UNAVAILABLE');
+    }
+  }
+
+  // Clears the per-email OTP attempt counter.
+  async clearOTPAttempts(email) {
+    try {
+      const key = `otp:attempts:${email}`;
+      await redisClient.del(key);
+
+      return { success: true };
+    } catch (error) {
+      logger.error('Error clearing OTP attempts:', error);
+      throw new Error('REDIS_UNAVAILABLE');
+    }
+  }
+
+  // Deletes an OTP from Redis.
   async deleteOTP(email) {
     try {
       const key = `otp:${email}`;
-      await this.redisClient.del(key);
+      await redisClient.del(key);
       return { success: true };
     } catch (error) {
-      logger.error('❌ Error deleting OTP:', error);
-      throw new Error('Failed to delete OTP');
+      logger.error('Error deleting OTP:', error);
+      throw new Error('REDIS_UNAVAILABLE');
     }
   }
-  
-  /**
-   * Check if OTP exists
-   */
+
+  // Checks whether an OTP exists for an email.
   async otpExists(email) {
     try {
       const key = `otp:${email}`;
-      const exists = await this.redisClient.exists(key);
+      const exists = await redisClient.exists(key);
       return exists === 1;
     } catch (error) {
-      logger.error('❌ Error checking OTP existence:', error);
-      return false;
+      logger.error('Error checking OTP existence:', error);
+      throw new Error('REDIS_UNAVAILABLE');
     }
   }
 }
