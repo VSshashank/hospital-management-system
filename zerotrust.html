@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HMS Zero Trust - Dynamic Context Engine</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .glow-success { box-shadow: 0 0 20px rgba(16, 185, 129, 0.3); }
+    .glow-warning { box-shadow: 0 0 20px rgba(245, 158, 11, 0.3); }
+    .glow-danger { box-shadow: 0 0 20px rgba(239, 68, 68, 0.3); }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    .toggle-checkbox:checked { right: 0; border-color: #06b6d4; }
+    .toggle-checkbox:checked + .toggle-label { background-color: #0891b2; }
+    .toggle-checkbox { transition: all 0.2s; right: 1.25rem; }
+    .toggle-label { transition: all 0.2s; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-900/60 backdrop-blur p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-3">
+      <i class="fa-solid fa-shield-halved text-cyan-400 text-2xl"></i>
+      <div>
+        <h1 class="text-base font-bold text-slate-100 tracking-wide">Zero Trust Adaptive Gateway</h1>
+        <p class="text-xs text-slate-400">Live Browser Telemetry, Context-Aware ABAC & Continuous Verification</p>
+      </div>
+    </div>
+    <div class="flex items-center space-x-3 text-xs font-mono">
+      <span class="text-slate-400">Engine Status:</span>
+      <span id="engineStatus" class="px-2 py-0.5 rounded bg-emerald-950 text-emerald-400 border border-emerald-800 flex items-center gap-1.5">
+        <i class="fa-solid fa-circle text-[8px] animate-pulse"></i> Telemetry Active
+      </span>
+    </div>
+  </header>
+
+  <main class="flex-1 p-4 md:p-6 max-w-7xl w-full mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- LOGIN & TELEMETRY SECTION -->
+    <div id="loginSection" class="lg:col-span-7 space-y-6 flex flex-col justify-between">
+
+      <!-- Live Context Analysis Card -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+          <h2 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+            <i class="fa-solid fa-satellite-dish text-cyan-400"></i> Real-Time Telemetry Signals
+          </h2>
+          <button onclick="fetchLiveTelemetry()" class="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
+            <i class="fa-solid fa-rotate-right"></i> Rescan Signals
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
+          <!-- Public IP -->
+          <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+            <span class="text-slate-500 block text-[10px] uppercase">Public IP Address</span>
+            <span id="telemetryIp" class="text-slate-200 font-bold">Scanning...</span>
+            <span id="telemetryIsp" class="text-[10px] text-slate-400 block truncate">Detecting ISP...</span>
+          </div>
+
+          <!-- IP Geolocation -->
+          <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+            <span class="text-slate-500 block text-[10px] uppercase">IP Derived Location</span>
+            <span id="telemetryIpLoc" class="text-slate-200 font-bold">Scanning...</span>
+            <span id="telemetryIpCoords" class="text-[10px] text-slate-400 block">Lat: --, Lon: --</span>
+          </div>
+
+          <!-- GPS Geolocation -->
+          <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-500 text-[10px] uppercase">Browser GPS Location</span>
+              <button onclick="requestGPS()" class="text-[9px] text-cyan-400 underline">Acquire GPS</button>
+            </div>
+            <span id="telemetryGpsLoc" class="text-slate-200 font-bold">Pending Permission</span>
+            <span id="telemetryGpsCoords" class="text-[10px] text-slate-400 block">Lat: --, Lon: --</span>
+          </div>
+
+          <!-- Discrepancy & Time -->
+          <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+            <span class="text-slate-500 block text-[10px] uppercase">IP vs GPS Delta Distance</span>
+            <span id="telemetryDelta" class="text-amber-400 font-bold">Calculating...</span>
+            <span id="telemetryTime" class="text-[10px] text-slate-400 block">Time: Local Evaluation</span>
+          </div>
+        </div>
+
+        <!-- Network Category (feeds Context-Aware ABAC) -->
+        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 flex justify-between items-center text-xs font-mono">
+          <span class="text-slate-500 uppercase text-[10px]">Detected Network Category</span>
+          <span id="networkCategory" class="text-slate-200 font-bold">Evaluating...</span>
+        </div>
+      </div>
+
+      <!-- Authentication Form Card -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
+        <h2 class="text-base font-bold text-slate-100 flex items-center gap-2">
+          <i class="fa-solid fa-lock text-cyan-400"></i> Identity Verification
+        </h2>
+
+        <form onsubmit="handleLogin(event)" class="space-y-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Username / Medical ID</label>
+            <input type="text" id="userInput" placeholder="e.g. staff_2210" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Password</label>
+            <input type="password" value="••••••••••••" required class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
+          </div>
+
+          <!-- Context-Aware ABAC Inputs -->
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Role (ABAC)</label>
+              <select id="roleInput" onchange="evaluateContextAndScore()" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
+                <option value="doctor">Doctor</option>
+                <option value="nurse">Nurse</option>
+                <option value="receptionist">Receptionist</option>
+                <option value="researcher">Researcher</option>
+                <option value="insurance">Insurance Agent</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Department</label>
+              <select id="deptInput" onchange="evaluateContextAndScore()" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
+                <option>Cardiology</option>
+                <option>Neurology</option>
+                <option>Oncology</option>
+                <option>General Medicine</option>
+                <option>ICU</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-300 mb-1">Patient Record Being Accessed</label>
+            <input type="text" id="patientIdInput" value="PT-10234" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
+          </div>
+
+          <label class="flex items-center gap-2 text-xs text-slate-300">
+            <input type="checkbox" id="emergencyInput" onchange="evaluateContextAndScore()" class="rounded bg-slate-800 border-slate-700">
+            Declare Emergency / ICU Context (enables Break-Glass eligibility)
+          </label>
+
+          <!-- Adaptive Authentication (dynamically shown based on risk) -->
+          <div id="adaptiveAuthBox" class="bg-slate-950 border border-slate-800 rounded-lg p-3 space-y-3">
+            <div class="flex justify-between items-center">
+              <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Adaptive Authentication</span>
+              <span id="riskTierBadge" class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-800 text-slate-400">Evaluating Risk...</span>
+            </div>
+
+            <div id="otpField" class="hidden">
+              <label class="block text-xs font-semibold text-slate-300 mb-1">OTP (sent to registered device)</label>
+              <input type="text" id="otpInput" placeholder="6-digit OTP" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
+            </div>
+
+            <div id="secQField" class="hidden">
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Security Question: Mother's maiden name?</label>
+              <input type="text" id="secQInput" placeholder="Answer" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
+            </div>
+
+            <div id="supervisorField" class="hidden">
+              <label class="block text-xs font-semibold text-slate-300 mb-1">Supervisor Approval Code</label>
+              <input type="text" id="supervisorInput" placeholder="Approval code from duty supervisor" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-cyan-500">
+            </div>
+          </div>
+
+          <button type="submit" id="submitBtn" class="w-full py-3 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-lg text-sm transition-all shadow-lg shadow-cyan-900/30 flex items-center justify-center gap-2">
+            <i class="fa-solid fa-right-to-bracket"></i> Authenticate Session
+          </button>
+        </form>
+
+        <button onclick="breakGlassAccess()" class="w-full py-2.5 bg-rose-950 hover:bg-rose-900 text-rose-300 font-bold rounded-lg text-xs transition-all border border-rose-800 flex items-center justify-center gap-2">
+          <i class="fa-solid fa-triangle-exclamation"></i> Break-Glass Emergency Access (ICU Override)
+        </button>
+
+        <div id="statusAlert" class="hidden p-3 rounded-lg text-xs border font-medium"></div>
+      </div>
+
+    </div>
+
+    <!-- LIVE TRUST SCORE ENGINE SECTION -->
+    <div id="scoreSection" class="lg:col-span-5 bg-slate-900 border border-slate-800 rounded-xl p-6 flex flex-col justify-between">
+      <div>
+        <h2 class="text-sm font-bold text-slate-200 uppercase tracking-wider mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-calculator text-cyan-400"></i> Dynamic Trust Calculator
+        </h2>
+
+        <!-- Score Meter -->
+        <div class="text-center py-6 bg-slate-950 rounded-xl border border-slate-800 mb-6">
+          <span class="text-xs text-slate-400 uppercase font-semibold">Live Calculated Score</span>
+          <div id="scoreVal" class="text-6xl font-black my-2 text-emerald-400">--</div>
+          <div id="scoreStatusBadge" class="inline-block px-3 py-1 text-xs font-bold rounded-full uppercase bg-slate-800 text-slate-400">
+            Awaiting Telemetry
+          </div>
+        </div>
+
+        <!-- Formula Breakdown -->
+        <div class="space-y-3 text-xs">
+          <span class="text-slate-400 font-bold uppercase text-[11px]">Score Weight Breakdown:</span>
+
+          <div class="space-y-2">
+            <div>
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>Location Proximity (IP vs GPS Delta):</span>
+                <span id="scoreLocWeight" class="font-mono text-emerald-400">0 / 35</span>
+              </div>
+              <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div id="barLoc" class="bg-emerald-500 h-full w-0 transition-all duration-500"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>Device & Browser Integrity:</span>
+                <span id="scoreDevWeight" class="font-mono text-emerald-400">0 / 25</span>
+              </div>
+              <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div id="barDev" class="bg-cyan-500 h-full w-0 transition-all duration-500"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>Access Time Window (Working Hours):</span>
+                <span id="scoreTimeWeight" class="font-mono text-emerald-400">0 / 20</span>
+              </div>
+              <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div id="barTime" class="bg-indigo-500 h-full w-0 transition-all duration-500"></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-slate-300 mb-1">
+                <span>Network & ISP Integrity:</span>
+                <span id="scoreNetWeight" class="font-mono text-emerald-400">0 / 20</span>
+              </div>
+              <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div id="barNet" class="bg-amber-500 h-full w-0 transition-all duration-500"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Context-Aware ABAC Panel -->
+        <div class="mt-5 pt-4 border-t border-slate-800 space-y-2">
+          <span class="text-slate-400 font-bold uppercase text-[11px] flex items-center gap-2">
+            <i class="fa-solid fa-layer-group text-cyan-400"></i> Context-Aware ABAC Snapshot
+          </span>
+          <div class="grid grid-cols-2 gap-2 text-[11px] font-mono">
+            <div class="bg-slate-950 p-2 rounded-lg border border-slate-800">
+              <span class="text-slate-500 block text-[9px] uppercase">Role</span>
+              <span id="ctxRole" class="text-slate-200 font-bold">--</span>
+            </div>
+            <div class="bg-slate-950 p-2 rounded-lg border border-slate-800">
+              <span class="text-slate-500 block text-[9px] uppercase">Department</span>
+              <span id="ctxDept" class="text-slate-200 font-bold">--</span>
+            </div>
+            <div class="bg-slate-950 p-2 rounded-lg border border-slate-800">
+              <span class="text-slate-500 block text-[9px] uppercase">Location Trust</span>
+              <span id="ctxLoc" class="text-slate-200 font-bold">--</span>
+            </div>
+            <div class="bg-slate-950 p-2 rounded-lg border border-slate-800">
+              <span class="text-slate-500 block text-[9px] uppercase">Time Trust</span>
+              <span id="ctxTime" class="text-slate-200 font-bold">--</span>
+            </div>
+            <div class="bg-slate-950 p-2 rounded-lg border border-slate-800 col-span-2">
+              <span class="text-slate-500 block text-[9px] uppercase">Emergency Status</span>
+              <span id="ctxEmergency" class="text-slate-200 font-bold">False</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-6 pt-4 border-t border-slate-800 text-[11px] text-slate-500 space-y-1">
+        <p><i class="fa-solid fa-circle-info text-cyan-400 mr-1"></i> Trust &gt; 80 → <strong class="text-emerald-400">Full Access</strong> · 50–80 → <strong class="text-amber-400">Limited Access</strong> · &lt; 50 → <strong class="text-rose-400">Deny Access</strong>.</p>
+      </div>
+    </div>
+
+    <!-- DYNAMIC PATIENT CONSENT MANAGEMENT -->
+    <div id="consentSection" class="lg:col-span-6 bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
+      <h2 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+        <i class="fa-solid fa-hand-holding-medical text-cyan-400"></i> Dynamic Patient Consent (Smart Contract)
+      </h2>
+      <p class="text-[11px] text-slate-500">Patient <span class="text-slate-300 font-mono" id="consentPatientId">PT-10234</span> controls which roles may access their record. Toggling updates the on-chain access policy instantly.</p>
+
+      <div class="space-y-3 text-xs">
+        <div class="flex justify-between items-center bg-slate-950 p-3 rounded-lg border border-slate-800">
+          <div>
+            <span class="block font-bold text-slate-200">Doctor A — Full Access</span>
+            <span class="text-[10px] text-slate-500">Complete EHR + prescription authority</span>
+          </div>
+          <div class="relative inline-block w-10 align-middle select-none">
+            <input type="checkbox" id="consentDoctor" checked onchange="updateConsent('doctor')" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer">
+            <label class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-700 cursor-pointer" for="consentDoctor"></label>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center bg-slate-950 p-3 rounded-lg border border-slate-800">
+          <div>
+            <span class="block font-bold text-slate-200">Researcher — Partial (Anonymized) Access</span>
+            <span class="text-[10px] text-slate-500">De-identified data for research use only</span>
+          </div>
+          <div class="relative inline-block w-10 align-middle select-none">
+            <input type="checkbox" id="consentResearcher" checked onchange="updateConsent('researcher')" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer">
+            <label class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-700 cursor-pointer" for="consentResearcher"></label>
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center bg-slate-950 p-3 rounded-lg border border-slate-800">
+          <div>
+            <span class="block font-bold text-slate-200">Insurance — Billing Only</span>
+            <span class="text-[10px] text-slate-500">Claims & billing codes only, no clinical notes</span>
+          </div>
+          <div class="relative inline-block w-10 align-middle select-none">
+            <input type="checkbox" id="consentInsurance" checked onchange="updateConsent('insurance')" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer">
+            <label class="toggle-label block overflow-hidden h-5 rounded-full bg-slate-700 cursor-pointer" for="consentInsurance"></label>
+          </div>
+        </div>
+      </div>
+      <div id="consentLog" class="text-[10px] text-slate-500 font-mono">No consent changes yet.</div>
+    </div>
+
+    <!-- CONTINUOUS VERIFICATION MONITOR -->
+    <div id="continuousSection" class="lg:col-span-6 bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
+      <h2 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+        <i class="fa-solid fa-heart-pulse text-cyan-400"></i> Continuous Verification
+      </h2>
+      <p class="text-[11px] text-slate-500">Zero Trust re-evaluates the session's trust score on a fixed interval, not just at login. A drop in trust can force re-authentication, restrict access, or log the session out.</p>
+
+      <div class="grid grid-cols-2 gap-3 text-xs font-mono">
+        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+          <span class="text-slate-500 block text-[10px] uppercase">Session State</span>
+          <span id="cvSessionState" class="text-slate-200 font-bold">No Active Session</span>
+        </div>
+        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+          <span class="text-slate-500 block text-[10px] uppercase">Next Re-Check In</span>
+          <span id="cvCountdown" class="text-slate-200 font-bold">--</span>
+        </div>
+      </div>
+
+      <div id="cvLog" class="space-y-1.5 max-h-32 overflow-y-auto custom-scrollbar text-[10px] font-mono text-slate-400">
+        <div class="text-slate-600">Continuous verification log will appear here after login...</div>
+      </div>
+    </div>
+
+    <!-- PROFILE PAGE (HIDDEN BY DEFAULT, SHOWN ON REDIRECT) -->
+    <div id="profilePage" class="hidden lg:col-span-12 bg-slate-900 border border-slate-800 rounded-xl p-8 space-y-6 glow-success">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-4">
+        <div class="flex items-center space-x-4">
+          <div id="profileAvatar" class="w-16 h-16 rounded-full bg-cyan-950 border-2 border-cyan-500 flex items-center justify-center text-cyan-400 text-2xl font-bold">
+            ??
+          </div>
+          <div>
+            <h2 id="profileName" class="text-2xl font-bold text-slate-100">--</h2>
+            <p id="profileRoleTitle" class="text-xs text-cyan-400 font-mono">--</p>
+          </div>
+        </div>
+        <button onclick="logout()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-xs font-bold text-rose-400 border border-slate-700 rounded-lg transition-colors">
+          <i class="fa-solid fa-power-off mr-1"></i> Revoke Session & Logout
+        </button>
+      </div>
+
+      <div id="emergencyBanner" class="hidden bg-rose-950 border border-rose-800 text-rose-300 text-xs font-bold p-3 rounded-lg flex items-center gap-2">
+        <i class="fa-solid fa-triangle-exclamation"></i> EMERGENCY BREAK-GLASS OVERRIDE ACTIVE — Security Officer Notified — All actions immutably logged.
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 font-mono text-xs">
+        <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
+          <span class="text-slate-500 block text-[10px]">VERIFIED TRUST SCORE</span>
+          <span id="profileScore" class="text-2xl font-bold text-emerald-400">--</span>
+        </div>
+        <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
+          <span class="text-slate-500 block text-[10px]">ACCESS TIER</span>
+          <span id="profileTier" class="text-sm font-bold text-slate-200">--</span>
+        </div>
+        <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
+          <span class="text-slate-500 block text-[10px]">AUTHENTICATED IP</span>
+          <span id="profileIp" class="text-sm font-bold text-slate-200">--</span>
+        </div>
+        <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
+          <span class="text-slate-500 block text-[10px]">LOCATION ORIGIN</span>
+          <span id="profileLoc" class="text-sm font-bold text-slate-200">--</span>
+        </div>
+      </div>
+
+      <div class="bg-slate-950 p-5 rounded-lg border border-slate-800 space-y-3">
+        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider flex items-center gap-2">
+          <i class="fa-solid fa-folder-open text-cyan-400"></i> Fine-Grained Data Access (Role × Trust Tier × Consent)
+        </h3>
+        <ul id="permissionsList" class="list-disc list-inside text-xs text-slate-300 space-y-2 font-mono">
+          <li>--</li>
+        </ul>
+        <div class="text-xs text-slate-400 pt-2 border-t border-slate-800">Zero Trust Audit Hash: <span id="auditHash" class="text-cyan-400">--</span></div>
+      </div>
+    </div>
+
+    <!-- BLOCKCHAIN AUDIT TRAIL -->
+    <div class="lg:col-span-12 bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-4">
+      <div class="flex justify-between items-center">
+        <h2 class="text-sm font-bold text-slate-200 uppercase tracking-wider flex items-center gap-2">
+          <i class="fa-solid fa-link text-cyan-400"></i> Blockchain-Based Immutable Audit Trail
+        </h2>
+        <span class="text-[10px] text-slate-500 font-mono"><span id="auditCount">0</span> block(s) chained</span>
+      </div>
+      <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-[11px] font-mono text-left">
+          <thead>
+            <tr class="text-slate-500 uppercase text-[9px] border-b border-slate-800">
+              <th class="py-2 pr-3">Block</th>
+              <th class="py-2 pr-3">User</th>
+              <th class="py-2 pr-3">Time</th>
+              <th class="py-2 pr-3">Patient ID</th>
+              <th class="py-2 pr-3">Trust Score</th>
+              <th class="py-2 pr-3">Decision</th>
+              <th class="py-2 pr-3">Block Hash</th>
+              <th class="py-2 pr-3">Prev Hash</th>
+            </tr>
+          </thead>
+          <tbody id="auditTableBody" class="text-slate-300">
+            <tr><td colspan="8" class="py-3 text-slate-600">No access events logged yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="border-t border-slate-800 p-4 text-center text-xs text-slate-500">
+    Zero Trust Security Engine • Dynamic Risk-Based Access • Continuous Verification • Context-Aware ABAC • Adaptive Auth • Break-Glass • Patient Consent • Blockchain Audit
+  </footer>
+
+  <script>
+    // Global Context Data Object
+    let telemetryData = {
+      ip: null,
+      ipLat: null,
+      ipLon: null,
+      city: null,
+      country: null,
+      isp: null,
+      gpsLat: null,
+      gpsLon: null,
+      deltaKm: null,
+      isWorkingHours: false,
+      deviceScore: 25,
+      netScore: 20,
+      networkCategory: 'Unknown IP'
+    };
+
+    let calculatedScore = 0;
+    let currentTier = 'deny'; // 'full' | 'limited' | 'deny'
+    let currentRiskTier = 'high'; // 'low' | 'medium' | 'high'
+
+    let patientConsent = { doctor: true, researcher: true, insurance: true };
+
+    let auditLog = [];      // Blockchain-style chained audit entries
+    let continuousTimer = null;
+    let continuousCountdown = 20; // seconds, simulating periodic re-verification
+    let activeSession = null;     // holds username/role/etc while logged in
+    let emergencyActive = false;
+
+    window.onload = async () => {
+      await fetchLiveTelemetry();
+      requestGPS();
+      evaluateContextAndScore();
+    };
+
+    // 1. Fetch Live IP Telemetry via Public API
+    async function fetchLiveTelemetry() {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        const data = await response.json();
+
+        telemetryData.ip = data.ip || 'Unknown';
+        telemetryData.ipLat = data.latitude;
+        telemetryData.ipLon = data.longitude;
+        telemetryData.city = data.city || 'Unknown';
+        telemetryData.country = data.country_name || 'Unknown';
+        telemetryData.isp = data.org || data.asn || 'Standard ISP';
+
+        document.getElementById('telemetryIp').innerText = telemetryData.ip;
+        document.getElementById('telemetryIsp').innerText = telemetryData.isp;
+        document.getElementById('telemetryIpLoc').innerText = `${telemetryData.city}, ${telemetryData.country}`;
+        document.getElementById('telemetryIpCoords').innerText = `Lat: ${telemetryData.ipLat}, Lon: ${telemetryData.ipLon}`;
+
+      } catch (err) {
+        console.warn('IP API fallback engaged:', err);
+        document.getElementById('telemetryIp').innerText = '127.0.0.1 (Local)';
+        document.getElementById('telemetryIpLoc').innerText = 'Local Subnet';
+      }
+
+      evaluateContextAndScore();
+    }
+
+    // 2. Acquire Browser GPS Coordinates
+    function requestGPS() {
+      if ('geolocation' in navigator) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            telemetryData.gpsLat = position.coords.latitude;
+            telemetryData.gpsLon = position.coords.longitude;
+
+            document.getElementById('telemetryGpsLoc').innerText = "GPS Acquired";
+            document.getElementById('telemetryGpsCoords').innerText = `Lat: ${telemetryData.gpsLat.toFixed(4)}, Lon: ${telemetryData.gpsLon.toFixed(4)}`;
+
+            // Compute distance delta between IP coordinates and GPS coordinates
+            if (telemetryData.ipLat && telemetryData.ipLon) {
+              telemetryData.deltaKm = calculateHaversineDistance(
+                telemetryData.ipLat, telemetryData.ipLon,
+                telemetryData.gpsLat, telemetryData.gpsLon
+              );
+              document.getElementById('telemetryDelta').innerText = `${telemetryData.deltaKm.toFixed(1)} km delta`;
+            }
+
+            evaluateContextAndScore();
+          },
+          (error) => {
+            document.getElementById('telemetryGpsLoc').innerText = "GPS Permission Denied";
+            document.getElementById('telemetryGpsCoords').innerText = "Fallback to IP only";
+            evaluateContextAndScore();
+          }
+        );
+      }
+    }
+
+    // 3. Distance Formula (Haversine)
+    function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371; // Radius of Earth in km
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+
+    // 4. Dynamic Risk-Based Trust Score Algorithm
+    // Trust Score = f(User Attributes/Role context, Device Trust, Location Trust, Time Trust)
+    function evaluateContextAndScore() {
+      let locScore = 15; // default if GPS pending
+      let locCategory = 'Unknown IP';
+      if (telemetryData.deltaKm !== null) {
+        if (telemetryData.deltaKm < 50) { locScore = 35; locCategory = 'Hospital / Trusted Network'; }
+        else if (telemetryData.deltaKm < 350) { locScore = 20; locCategory = 'Home Network'; }
+        else { locScore = 5; locCategory = 'Unknown / Remote IP (Possible VPN)'; }
+      }
+      telemetryData.networkCategory = locCategory;
+      document.getElementById('networkCategory').innerText = locCategory;
+
+      // Time Window Evaluation (Working / Duty hours: 8 AM - 8 PM)
+      const currentHour = new Date().getHours();
+      telemetryData.isWorkingHours = (currentHour >= 8 && currentHour <= 20);
+      let timeScore = telemetryData.isWorkingHours ? 20 : 10;
+
+      document.getElementById('telemetryTime').innerText = `Hour: ${currentHour}:00 (${telemetryData.isWorkingHours ? 'Working Hours' : 'Off Hours'})`;
+
+      // Device & Browser Integrity
+      let devScore = telemetryData.deviceScore;
+
+      // Total Score Summation (Max 100)
+      calculatedScore = locScore + devScore + timeScore + telemetryData.netScore;
+      calculatedScore = Math.max(0, Math.min(100, Math.round(calculatedScore)));
+
+      // Update Meter & Weights UI
+      document.getElementById('scoreVal').innerText = calculatedScore;
+      document.getElementById('scoreLocWeight').innerText = `${locScore} / 35`;
+      document.getElementById('scoreDevWeight').innerText = `${devScore} / 25`;
+      document.getElementById('scoreTimeWeight').innerText = `${timeScore} / 20`;
+      document.getElementById('scoreNetWeight').innerText = `${telemetryData.netScore} / 20`;
+
+      document.getElementById('barLoc').style.width = `${(locScore / 35) * 100}%`;
+      document.getElementById('barDev').style.width = `${(devScore / 25) * 100}%`;
+      document.getElementById('barTime').style.width = `${(timeScore / 20) * 100}%`;
+      document.getElementById('barNet').style.width = `${(telemetryData.netScore / 20) * 100}%`;
+
+      const badge = document.getElementById('scoreStatusBadge');
+      const scoreValEl = document.getElementById('scoreVal');
+
+      // Dynamic Decision: Trust > 80 Full | 50-80 Limited | < 50 Deny
+      if (calculatedScore > 80) {
+        currentTier = 'full';
+        scoreValEl.className = "text-6xl font-black my-2 text-emerald-400";
+        badge.className = "inline-block px-3 py-1 text-xs font-bold rounded-full uppercase bg-emerald-950 text-emerald-400 border border-emerald-800";
+        badge.innerText = "High Trust - Full Access";
+      } else if (calculatedScore >= 50) {
+        currentTier = 'limited';
+        scoreValEl.className = "text-6xl font-black my-2 text-amber-400";
+        badge.className = "inline-block px-3 py-1 text-xs font-bold rounded-full uppercase bg-amber-950 text-amber-400 border border-amber-800";
+        badge.innerText = "Medium Trust - Limited Access";
+      } else {
+        currentTier = 'deny';
+        scoreValEl.className = "text-6xl font-black my-2 text-rose-500";
+        badge.className = "inline-block px-3 py-1 text-xs font-bold rounded-full uppercase bg-rose-950 text-rose-400 border border-rose-800";
+        badge.innerText = "High Risk - Access Blocked";
+      }
+
+      // Risk tier drives Adaptive Authentication (inverse of trust tier)
+      currentRiskTier = currentTier === 'full' ? 'low' : (currentTier === 'limited' ? 'medium' : 'high');
+      updateAdaptiveAuthFields();
+      updateAbacPanel();
+    }
+
+    // 5. Adaptive Authentication - fields required scale with risk
+    function updateAdaptiveAuthFields() {
+      const otp = document.getElementById('otpField');
+      const secQ = document.getElementById('secQField');
+      const supervisor = document.getElementById('supervisorField');
+      const badge = document.getElementById('riskTierBadge');
+
+      otp.classList.add('hidden');
+      secQ.classList.add('hidden');
+      supervisor.classList.add('hidden');
+
+      if (currentRiskTier === 'low') {
+        badge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800";
+        badge.innerText = "Low Risk — Password Only";
+      } else if (currentRiskTier === 'medium') {
+        otp.classList.remove('hidden');
+        badge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-950 text-amber-400 border border-amber-800";
+        badge.innerText = "Medium Risk — Password + OTP";
+      } else {
+        otp.classList.remove('hidden');
+        secQ.classList.remove('hidden');
+        supervisor.classList.remove('hidden');
+        badge.className = "text-[10px] font-bold px-2 py-0.5 rounded-full bg-rose-950 text-rose-400 border border-rose-800";
+        badge.innerText = "High Risk — Password + OTP + Security Q + Supervisor Approval";
+      }
+    }
+
+    // 6. Context-Aware ABAC Panel
+    function updateAbacPanel() {
+      const role = document.getElementById('roleInput')?.value || 'doctor';
+      const dept = document.getElementById('deptInput')?.value || 'General Medicine';
+      const emergency = document.getElementById('emergencyInput')?.checked || false;
+
+      document.getElementById('ctxRole').innerText = capitalize(role);
+      document.getElementById('ctxDept').innerText = dept;
+      document.getElementById('ctxLoc').innerText = telemetryData.networkCategory;
+      document.getElementById('ctxTime').innerText = telemetryData.isWorkingHours ? 'Duty Hours' : 'Off Hours';
+
+      const emEl = document.getElementById('ctxEmergency');
+      emEl.innerText = emergency ? 'True — ICU Emergency Declared' : 'False';
+      emEl.className = emergency ? 'text-rose-400 font-bold' : 'text-slate-200 font-bold';
+    }
+
+    function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+    // 7. Fine-Grained Data Access Matrix (Role x Trust Tier), gated by Patient Consent for
+    //    roles that require explicit patient authorization (researcher / insurance).
+    function getPermissions(role, tier) {
+      const matrix = {
+        doctor: {
+          full: ["Full Patient Electronic Health Record (EHR)", "ICU & Cardiology Diagnostic Telemetry Streams", "Authorized for High-Risk Prescription Execution"],
+          limited: ["Read-Only Patient Summary", "Diagnostic History (Last 30 Days)"],
+        },
+        nurse: {
+          full: ["Medication Administration Records", "Vitals & Nursing Notes", "Care Plan Updates"],
+          limited: ["Medication Schedule (Read-Only)"],
+        },
+        receptionist: {
+          full: ["Patient Demographics", "Appointment Scheduling", "Insurance Verification"],
+          limited: ["Patient Demographics (Read-Only)"],
+        },
+        researcher: {
+          full: ["Anonymized Aggregate Records", "De-Identified Diagnostic Datasets"],
+          limited: ["Anonymized Summary Statistics Only"],
+        },
+        insurance: {
+          full: ["Billing & Claims Records Only"],
+          limited: ["Claim Status (Read-Only)"],
+        }
+      };
+
+      if (tier === 'deny') return [];
+
+      // Consent gate for non-clinical-staff roles
+      if (role === 'researcher' && !patientConsent.researcher) return ["ACCESS REVOKED: Patient consent withdrawn for Researcher role"];
+      if (role === 'insurance' && !patientConsent.insurance) return ["ACCESS REVOKED: Patient consent withdrawn for Insurance role"];
+      if (role === 'doctor' && !patientConsent.doctor) return ["ACCESS REVOKED: Patient consent withdrawn for Doctor role"];
+
+      return matrix[role][tier] || matrix[role]['limited'];
+    }
+
+    // 8. Dynamic Patient Consent — Smart Contract Simulation
+    function updateConsent(who) {
+      patientConsent.doctor = document.getElementById('consentDoctor').checked;
+      patientConsent.researcher = document.getElementById('consentResearcher').checked;
+      patientConsent.insurance = document.getElementById('consentInsurance').checked;
+
+      const state = patientConsent[who] ? 'GRANTED' : 'REVOKED';
+      const ts = new Date().toLocaleTimeString();
+      document.getElementById('consentLog').innerHTML =
+        `<i class="fa-solid fa-file-contract text-cyan-400 mr-1"></i> Smart contract updated @ ${ts}: <strong class="text-slate-300">${capitalize(who)}</strong> access ${state}.`;
+
+      addAuditEntry({
+        user: 'PATIENT_CONSENT_CONTRACT',
+        patientId: document.getElementById('patientIdInput')?.value || 'PT-10234',
+        trustScore: '--',
+        decision: `CONSENT_${state}_${who.toUpperCase()}`
+      });
+
+      // If the currently logged-in session is affected, refresh their permissions live
+      if (activeSession) renderPermissions();
+    }
+
+    // 9. Blockchain-Style Immutable Audit Trail
+    function pseudoHash(input) {
+      let hash = 0;
+      for (let i = 0; i < input.length; i++) {
+        hash = ((hash << 5) - hash) + input.charCodeAt(i);
+        hash |= 0;
+      }
+      return Math.abs(hash).toString(16).padStart(8, '0') + Math.random().toString(16).substring(2, 6);
+    }
+
+    function addAuditEntry({ user, patientId, trustScore, decision }) {
+      const prevHash = auditLog.length ? auditLog[auditLog.length - 1].hash : '0'.repeat(12);
+      const time = new Date().toLocaleString();
+      const raw = `${user}|${time}|${patientId}|${trustScore}|${decision}|${prevHash}`;
+      const hash = pseudoHash(raw);
+
+      const entry = { block: auditLog.length + 1, user, time, patientId, trustScore, decision, hash, prevHash };
+      auditLog.push(entry);
+      renderAuditTrail();
+      return entry;
+    }
+
+    function renderAuditTrail() {
+      const body = document.getElementById('auditTableBody');
+      document.getElementById('auditCount').innerText = auditLog.length;
+      if (auditLog.length === 0) {
+        body.innerHTML = `<tr><td colspan="8" class="py-3 text-slate-600">No access events logged yet.</td></tr>`;
+        return;
+      }
+      body.innerHTML = auditLog.slice().reverse().map(e => `
+        <tr class="border-b border-slate-900">
+          <td class="py-1.5 pr-3">#${e.block}</td>
+          <td class="py-1.5 pr-3">${e.user}</td>
+          <td class="py-1.5 pr-3 text-slate-500">${e.time}</td>
+          <td class="py-1.5 pr-3">${e.patientId}</td>
+          <td class="py-1.5 pr-3">${e.trustScore}</td>
+          <td class="py-1.5 pr-3 ${e.decision.includes('DENY') || e.decision.includes('REVOKE') ? 'text-rose-400' : e.decision.includes('EMERGENCY') ? 'text-amber-400' : 'text-emerald-400'}">${e.decision}</td>
+          <td class="py-1.5 pr-3 text-cyan-400">0x${e.hash}</td>
+          <td class="py-1.5 pr-3 text-slate-600">0x${e.prevHash}</td>
+        </tr>
+      `).join('');
+    }
+
+    // 10. Fine-Grained Permissions Render (used at login and on continuous re-check / consent change)
+    function renderPermissions() {
+      if (!activeSession) return;
+      const perms = getPermissions(activeSession.role, emergencyActive ? 'full' : currentTier);
+      const list = document.getElementById('permissionsList');
+      list.innerHTML = perms.length
+        ? perms.map(p => `<li>${p}</li>`).join('')
+        : `<li class="text-rose-400">No permissions granted at current trust tier.</li>`;
+      document.getElementById('profileTier').innerText = emergencyActive ? 'EMERGENCY OVERRIDE' : currentTier.toUpperCase();
+    }
+
+    // 11. Login Handler & Redirection Logic
+    function handleLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('userInput').value || 'unknown_user';
+      const role = document.getElementById('roleInput').value;
+      const dept = document.getElementById('deptInput').value;
+      const patientId = document.getElementById('patientIdInput').value || 'PT-10234';
+      const alertBox = document.getElementById('statusAlert');
+
+      alertBox.classList.remove('hidden', 'bg-emerald-950', 'text-emerald-300', 'border-emerald-800', 'bg-amber-950', 'text-amber-300', 'border-amber-800', 'bg-rose-950', 'text-rose-300', 'border-rose-800');
+
+      // Adaptive auth validation
+      if (currentRiskTier !== 'low' && !document.getElementById('otpInput').value) {
+        alertBox.classList.add('bg-amber-950', 'text-amber-300', 'border-amber-800');
+        alertBox.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-1"></i> Adaptive Authentication requires an OTP at ${currentRiskTier} risk. Please enter the OTP.`;
+        return;
+      }
+      if (currentRiskTier === 'high' && (!document.getElementById('secQInput').value || !document.getElementById('supervisorInput').value)) {
+        alertBox.classList.add('bg-amber-950', 'text-amber-300', 'border-amber-800');
+        alertBox.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-1"></i> High risk session requires Security Question + Supervisor Approval.`;
+        return;
+      }
+
+      emergencyActive = false;
+
+      if (currentTier === 'full' || currentTier === 'limited') {
+        const decisionLabel = currentTier === 'full' ? 'FULL_ACCESS_GRANTED' : 'LIMITED_ACCESS_GRANTED';
+        alertBox.classList.add(currentTier === 'full' ? 'bg-emerald-950' : 'bg-amber-950', currentTier === 'full' ? 'text-emerald-300' : 'text-amber-300', currentTier === 'full' ? 'border-emerald-800' : 'border-amber-800');
+        alertBox.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i> Trust Score Verified (${calculatedScore}/100) — ${currentTier === 'full' ? 'Full' : 'Limited'} Access. Redirecting to Profile...`;
+
+        activeSession = { username, role, dept, patientId };
+
+        setTimeout(() => {
+          document.getElementById('loginSection').classList.add('hidden');
+          document.getElementById('scoreSection').classList.add('hidden');
+
+          const profile = document.getElementById('profilePage');
+          profile.classList.remove('hidden');
+          document.getElementById('emergencyBanner').classList.add('hidden');
+
+          const initials = username.replace(/[^a-zA-Z]/g, '').substring(0, 2).toUpperCase() || 'ZT';
+          document.getElementById('profileAvatar').innerText = initials;
+          document.getElementById('profileName').innerText = username;
+          document.getElementById('profileRoleTitle').innerText = `${capitalize(role)} • ${dept}`;
+          document.getElementById('profileScore').innerText = `${calculatedScore} / 100`;
+          document.getElementById('profileIp').innerText = telemetryData.ip || '127.0.0.1';
+          document.getElementById('profileLoc').innerText = `${telemetryData.city || 'Unknown'}, ${telemetryData.country || 'Local'}`;
+
+          renderPermissions();
+
+          const entry = addAuditEntry({ user: username, patientId, trustScore: calculatedScore, decision: decisionLabel });
+          document.getElementById('auditHash').innerText = '0x' + entry.hash;
+
+          startContinuousVerification();
+        }, 1200);
+
+      } else {
+        alertBox.classList.add('bg-rose-950', 'text-rose-300', 'border-rose-800');
+        alertBox.innerHTML = `<i class="fa-solid fa-ban mr-1"></i> <strong>Access Denied:</strong> Trust score of ${calculatedScore} is below the minimum threshold (50). Redirect blocked.`;
+        addAuditEntry({ user: username, patientId, trustScore: calculatedScore, decision: 'ACCESS_DENIED' });
+      }
+    }
+
+    // 12. Break-Glass Emergency Access
+    function breakGlassAccess() {
+      const username = document.getElementById('userInput').value || 'emergency_user';
+      const role = document.getElementById('roleInput').value || 'doctor';
+      const dept = document.getElementById('deptInput').value || 'ICU';
+      const patientId = document.getElementById('patientIdInput').value || 'PT-10234';
+      const declared = document.getElementById('emergencyInput').checked;
+
+      if (!declared) {
+        const alertBox = document.getElementById('statusAlert');
+        alertBox.classList.remove('hidden', 'bg-emerald-950', 'text-emerald-300', 'border-emerald-800', 'bg-rose-950', 'text-rose-300', 'border-rose-800');
+        alertBox.classList.add('bg-amber-950', 'text-amber-300', 'border-amber-800');
+        alertBox.innerHTML = `<i class="fa-solid fa-circle-exclamation mr-1"></i> Please check "Declare Emergency / ICU Context" before requesting Break-Glass access.`;
+        return;
+      }
+
+      emergencyActive = true;
+      activeSession = { username, role, dept, patientId };
+
+      document.getElementById('loginSection').classList.add('hidden');
+      document.getElementById('scoreSection').classList.add('hidden');
+
+      const profile = document.getElementById('profilePage');
+      profile.classList.remove('hidden');
+      profile.classList.add('glow-warning');
+      document.getElementById('emergencyBanner').classList.remove('hidden');
+
+      const initials = username.replace(/[^a-zA-Z]/g, '').substring(0, 2).toUpperCase() || 'ER';
+      document.getElementById('profileAvatar').innerText = initials;
+      document.getElementById('profileName').innerText = username;
+      document.getElementById('profileRoleTitle').innerText = `${capitalize(role)} • ${dept} • EMERGENCY OVERRIDE`;
+      document.getElementById('profileScore').innerText = `${calculatedScore} / 100 (Overridden)`;
+      document.getElementById('profileIp').innerText = telemetryData.ip || '127.0.0.1';
+      document.getElementById('profileLoc').innerText = `${telemetryData.city || 'Unknown'}, ${telemetryData.country || 'Local'}`;
+
+      renderPermissions();
+
+      const entry = addAuditEntry({ user: username, patientId, trustScore: calculatedScore, decision: 'EMERGENCY_BREAK_GLASS_OVERRIDE' });
+      document.getElementById('auditHash').innerText = '0x' + entry.hash;
+
+      startContinuousVerification();
+    }
+
+    // 13. Continuous Verification Engine — re-checks trust periodically, not just at login
+    function startContinuousVerification() {
+      stopContinuousVerification();
+      continuousCountdown = 20;
+      document.getElementById('cvSessionState').innerText = emergencyActive ? 'Emergency Session Active' : 'Session Active — Monitoring';
+      document.getElementById('cvLog').innerHTML = '';
+      logContinuous(`Session established for ${activeSession.username}. Baseline trust: ${calculatedScore}.`);
+
+      continuousTimer = setInterval(() => {
+        continuousCountdown--;
+        document.getElementById('cvCountdown').innerText = `${continuousCountdown}s`;
+
+        if (continuousCountdown <= 0) {
+          runContinuousRecheck();
+          continuousCountdown = 20;
+        }
+      }, 1000);
+    }
+
+    function stopContinuousVerification() {
+      if (continuousTimer) clearInterval(continuousTimer);
+      continuousTimer = null;
+      document.getElementById('cvSessionState').innerText = 'No Active Session';
+      document.getElementById('cvCountdown').innerText = '--';
+    }
+
+    function runContinuousRecheck() {
+      // Simulate device / IP / location drift between checks
+      const drift = (Math.random() - 0.5) * 40; // km jitter
+      if (telemetryData.deltaKm !== null) {
+        telemetryData.deltaKm = Math.max(0, telemetryData.deltaKm + drift);
+      }
+      const deviceDrift = Math.random() < 0.15; // 15% chance of a "new device" signal
+      telemetryData.deviceScore = deviceDrift ? 10 : 25;
+
+      evaluateContextAndScore();
+      renderPermissions();
+
+      const patientId = activeSession.patientId;
+      let action;
+      if (emergencyActive) {
+        action = 'EMERGENCY_SESSION_MAINTAINED';
+      } else if (currentTier === 'full') {
+        action = 'RE-VERIFIED — Full Access Maintained';
+      } else if (currentTier === 'limited') {
+        action = 'TRUST_DROPPED — OTP Re-Verification Requested';
+      } else {
+        action = 'TRUST_COLLAPSED — Session Restricted / Forced Logout';
+      }
+
+      logContinuous(`Recheck: trust=${calculatedScore}, device_changed=${deviceDrift}, action="${action}"`);
+      addAuditEntry({ user: activeSession.username, patientId, trustScore: calculatedScore, decision: `CONTINUOUS_${action.split(' ')[0].replace(/[^A-Z_]/g, '')}` });
+
+      if (!emergencyActive && currentTier === 'deny') {
+        logContinuous('Trust score collapsed below 50. Forcing logout.');
+        setTimeout(() => logout(), 1500);
+      }
+    }
+
+    function logContinuous(message) {
+      const log = document.getElementById('cvLog');
+      const ts = new Date().toLocaleTimeString();
+      const row = document.createElement('div');
+      row.innerHTML = `<span class="text-slate-600">[${ts}]</span> ${message}`;
+      log.prepend(row);
+    }
+
+    // Logout / Reset
+    function logout() {
+      document.getElementById('profilePage').classList.add('hidden');
+      document.getElementById('profilePage').classList.remove('glow-warning');
+      document.getElementById('loginSection').classList.remove('hidden');
+      document.getElementById('scoreSection').classList.remove('hidden');
+      document.getElementById('statusAlert').classList.add('hidden');
+      stopContinuousVerification();
+      if (activeSession) {
+        addAuditEntry({ user: activeSession.username, patientId: activeSession.patientId, trustScore: calculatedScore, decision: 'SESSION_LOGOUT' });
+      }
+      activeSession = null;
+      emergencyActive = false;
+    }
+  </script>
+</body>
+</html>
